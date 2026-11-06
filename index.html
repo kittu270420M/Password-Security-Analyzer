@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Password Security Analyzer</title>
+  <meta name="description" content="Analyze password strength, entropy, crack time, and get security recommendations. Everything runs locally in your browser.">
+  <meta name="color-scheme" content="light dark">
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash. */
+    try {
+      var saved = localStorage.getItem('psa-theme');
+      if (saved === 'dark' || saved === 'light') document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============ NAVIGATION ============ -->
+  <header class="nav" id="top">
+    <div class="nav__inner">
+      <a class="brand" href="#top" aria-label="Password Analyzer home">
+        <span class="brand__logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+            <path d="M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9L12 3z"/>
+            <path d="M12 8.2l3.3 1.9v3.8L12 15.8l-3.3-1.9v-3.8L12 8.2z"/>
+          </svg>
+        </span>
+        <span class="brand__name">Password Analyzer</span>
+      </a>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#analyzer" class="nav__link is-active" data-section="analyzer">Analyzer</a>
+        <a href="#generator" class="nav__link" data-section="generator">Generator</a>
+        <a href="#about" class="nav__link" data-section="about">About</a>
+        <span class="nav__divider" aria-hidden="true"></span>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Toggle light / dark theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <p class="eyebrow eyebrow--hero">Personal Security Tool</p>
+      <h1>Password Security Analyzer</h1>
+      <p class="hero__sub">Analyze password strength, entropy, crack time, and get security recommendations.</p>
+    </section>
+
+    <!-- ============ ANALYZER ============ -->
+    <section class="card card--analyzer" id="analyzer" aria-labelledby="analyzeTitle">
+      <div class="card__head">
+        <div>
+          <p class="eyebrow">01 / Analyze</p>
+          <h2 id="analyzeTitle" class="h-lg">Check your password</h2>
+        </div>
+        <span class="pill"><i class="pill__dot" aria-hidden="true"></i>Local analysis</span>
+      </div>
+
+      <label class="field-label" for="passwordInput">Enter password</label>
+      <form class="input-row" id="analyzeForm" autocomplete="off" novalidate>
+        <div class="input-wrap">
+          <input id="passwordInput" type="password" placeholder="Type a password to analyze" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="privacyNote">
+          <button class="eye" id="eyeBtn" type="button" aria-label="Show password" aria-pressed="false">
+            <svg class="eye__open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="eye__closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18.5 18.5 0 0 1 4.1-5.1M9.9 5.2A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a18.6 18.6 0 0 1-2.2 3.2M14.1 14.1a3 3 0 1 1-4.2-4.2M2 2l20 20"/></svg>
+          </button>
+        </div>
+        <button class="btn btn--primary btn--analyze" id="analyzeBtn" type="submit">Analyze</button>
+      </form>
+      <span id="privacyNote" class="sr-only">Your password never leaves this browser.</span>
+
+      <!-- Analysis dashboard -->
+      <div class="panel" aria-live="polite">
+        <!-- A. Strength meter -->
+        <div class="panel__col panel__meter">
+          <div class="ring" id="ring" role="img" aria-label="Password strength meter: not analyzed">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring__track" cx="60" cy="60" r="52"/>
+              <circle class="ring__bar" id="ringBar" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="ring__center">
+              <div class="ring__label" id="strengthLabel">Not analyzed</div>
+              <div class="ring__score" id="strengthScore">&mdash;</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- B. Metrics -->
+        <div class="panel__col panel__metrics">
+          <div class="metric">
+            <span class="metric__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l3-8 4 16 3-8h5"/></svg></span>
+            <div><span class="metric__label">Entropy</span><strong class="metric__value" id="mEntropy">&mdash;</strong></div>
+          </div>
+          <div class="metric">
+            <span class="metric__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg></span>
+            <div><span class="metric__label">Length</span><strong class="metric__value" id="mLength">0 characters</strong></div>
+          </div>
+          <div class="metric">
+            <span class="metric__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.8"/><circle cx="12" cy="6" r="1.8"/><circle cx="18" cy="6" r="1.8"/><circle cx="6" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18" cy="12" r="1.8"/><circle cx="6" cy="18" r="1.8"/><circle cx="12" cy="18" r="1.8"/><circle cx="18" cy="18" r="1.8"/></svg></span>
+            <div><span class="metric__label">Character Pool</span><strong class="metric__value" id="mPool">&mdash;</strong></div>
+          </div>
+        </div>
+
+        <!-- C. Crack time -->
+        <div class="panel__col panel__crack">
+          <div class="crack">
+            <div class="crack__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+              <span>Estimated Crack Time</span>
+              <span class="info" tabindex="0" role="note" aria-label="About this estimate: Theoretical average time for an exhaustive search at 10 billion guesses per second. Real attacks depend on the hashing algorithm, hardware and attack method, and human-made passwords are often guessed far faster.">i
+                <span class="info__tip">Theoretical average time for an exhaustive search at 10 billion guesses per second. Real attacks depend on the hashing algorithm, hardware and attack method, and human-made passwords are often guessed much faster.</span>
+              </span>
+            </div>
+            <div class="crack__value" id="crackValue">&mdash;</div>
+            <div class="crack__note" id="crackNote">Enter a password to estimate.</div>
+            <div class="crack__rate">Assumed rate: 10 billion guesses / second</div>
+          </div>
+        </div>
+      </div>
+      <p class="footnote">Illustrative average brute-force estimate. Real attack speeds vary; human-created passwords can be much easier to guess.</p>
+
+      <h3 class="h-md">Character checks</h3>
+      <div class="tiles">
+        <div class="tile" data-check="upper"><span class="tile__ico" aria-hidden="true"></span><div><strong>Uppercase</strong><span>A &ndash; Z</span></div></div>
+        <div class="tile" data-check="lower"><span class="tile__ico" aria-hidden="true"></span><div><strong>Lowercase</strong><span>a &ndash; z</span></div></div>
+        <div class="tile" data-check="number"><span class="tile__ico" aria-hidden="true"></span><div><strong>Numbers</strong><span>0 &ndash; 9</span></div></div>
+        <div class="tile" data-check="symbol"><span class="tile__ico" aria-hidden="true"></span><div><strong>Symbols</strong><span>! @ # $ &hellip;</span></div></div>
+      </div>
+      <div class="minis">
+        <span class="mini" data-check="len12"><i class="mini__dot" aria-hidden="true"></i><span>At least 12 characters</span></span>
+        <span class="mini" data-check="common"><i class="mini__dot" aria-hidden="true"></i><span id="commonText">Not a common password</span></span>
+      </div>
+    </section>
+
+    <!-- ============ SUGGESTIONS + GENERATOR ============ -->
+    <div class="lower" id="generator">
+      <section class="card card--suggest" aria-labelledby="sugTitle">
+        <h2 class="h-md h-icon" id="sugTitle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a4 4 0 0 0-4 4c0 1.1.4 2 1 2.7-1.8.4-3 1.8-3 3.5 0 1.9 1.6 3.3 3.5 3.3H11v4h2v-4h1.5c1.9 0 3.5-1.4 3.5-3.3 0-1.7-1.2-3.1-3-3.5.6-.7 1-1.6 1-2.7a4 4 0 0 0-4-4z"/></svg>
+          Security Suggestions
+        </h2>
+        <ul class="suggest" id="suggestList"></ul>
+      </section>
+
+      <section class="card card--gen" aria-labelledby="genTitle">
+        <h2 class="h-md h-icon" id="genTitle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="9" r="2.4"/><path d="M12 11.4V16M12 14h2M12 16h2"/></svg>
+          Generate Secure Password
+        </h2>
+
+        <div class="gen">
+          <div class="gen__length">
+            <label class="gen__label" for="lengthSlider">Password Length: <span class="gen__value" id="lengthValue">16</span></label>
+            <input id="lengthSlider" class="slider" type="range" min="1" max="40" step="1" value="16" aria-valuemin="1" aria-valuemax="40">
+            <div class="ticks" aria-hidden="true">
+              <span style="left:0%">1</span>
+              <span style="left:17.95%">8</span>
+              <span style="left:33.33%">14</span>
+              <span style="left:100%">40</span>
+            </div>
+          </div>
+
+          <fieldset class="opts">
+            <legend class="sr-only">Character types</legend>
+            <label class="check"><input type="checkbox" id="optUpper" checked><span class="check__box" aria-hidden="true"></span>Uppercase (A &ndash; Z)</label>
+            <label class="check"><input type="checkbox" id="optLower" checked><span class="check__box" aria-hidden="true"></span>Lowercase (a &ndash; z)</label>
+            <label class="check"><input type="checkbox" id="optNumber" checked><span class="check__box" aria-hidden="true"></span>Numbers (0 &ndash; 9)</label>
+            <label class="check"><input type="checkbox" id="optSymbol" checked><span class="check__box" aria-hidden="true"></span>Symbols (! @ # $ &hellip;)</label>
+          </fieldset>
+
+          <button class="btn btn--primary btn--generate" id="generateBtn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+            Generate
+          </button>
+        </div>
+
+        <p class="footnote gen__hint" id="genHint">Choose a longer password for stronger protection. Lengths below 8 characters are not recommended.</p>
+
+        <div class="out-row">
+          <input id="generatedOutput" class="out" type="text" readonly placeholder="Your generated password appears here" aria-label="Generated password" spellcheck="false" autocomplete="off">
+          <button class="btn btn--ghost btn--copy" id="copyBtn" type="button" aria-label="Copy generated password">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+            <span id="copyText">Copy</span>
+          </button>
+        </div>
+        <p class="status" id="genStatus" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <!-- ============ ACTION FOOTER ============ -->
+    <section class="card card--actions" aria-label="Report actions">
+      <button class="btn btn--primary btn--wide" id="downloadBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>
+        Download Security Report
+      </button>
+      <button class="btn btn--outline btn--wide" id="clearBtn" type="button">Clear</button>
+      <p class="status status--center" id="actionStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="card card--about" id="about" aria-labelledby="aboutTitle">
+      <p class="eyebrow">About</p>
+      <h2 class="h-lg" id="aboutTitle">How this analyzer works</h2>
+
+      <div class="about">
+        <article>
+          <h3>1. Password Strength Scoring</h3>
+          <p>The score (0&ndash;100) starts from the estimated entropy and is then reduced for patterns attackers try first: common passwords, keyboard or numeric sequences, repeated characters, years, and predictable &ldquo;Word + symbol + digits&rdquo; structures. Very short passwords are capped. 80+ is Strong, 50&ndash;79 Moderate, below 50 Weak.</p>
+        </article>
+        <article>
+          <h3>2. Entropy Estimation</h3>
+          <p>Entropy = length &times; log<sub>2</sub>(character pool size). The pool is the sum of the character classes you used (26 upper, 26 lower, 10 digits, 32 symbols). This assumes every character is picked uniformly at random, so it can <strong>overestimate</strong> the unpredictability of human-created passwords.</p>
+        </article>
+        <article>
+          <h3>3. Crack-Time Estimation</h3>
+          <p>Average guesses = N<sup>L</sup> / 2, divided by an assumed 10 billion guesses per second. The result is theoretical. Real cracking time depends on the attack scenario, hashing algorithm, hardware, and guessing rate. It is never a guarantee. Huge values are computed with logarithms to avoid number overflow.</p>
+        </article>
+        <article>
+          <h3>4. Privacy by Design</h3>
+          <p>All analysis runs locally in your browser. There is no backend, database, or external API, and your password is never stored or transmitted. The PDF report is generated in the browser and never contains the password itself. Only your theme choice is saved in localStorage.</p>
+        </article>
+        <article>
+          <h3>5. Password Generator Methodology</h3>
+          <p>Passwords are built with <code>crypto.getRandomValues()</code> using rejection sampling to avoid modulo bias. When the length allows, at least one character from each selected category is included, and the result is shuffled with a secure Fisher&ndash;Yates shuffle. <code>Math.random()</code> is never used.</p>
+        </article>
+        <article>
+          <h3>6. Security Limitations</h3>
+          <p>This tool does <strong>not</strong> check real data breaches or leaked-password databases, and its common-password list is small. A high score does not make a password safe if it was reused or leaked. Use a unique password for every account and enable multi-factor authentication.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="site-footer">Password Security Analyzer v3.0 &middot; Runs entirely in your browser &middot; No data leaves your device</footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
