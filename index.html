@@ -3,9 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Password Security Analyzer</title>
-  <meta name="description" content="Analyze password strength, entropy, crack time, and get security recommendations. Everything runs locally in your browser.">
+  <title>Free Password Strength Checker &amp; Secure Generator</title>
+  <meta name="description" content="Check password strength, entropy and estimated crack time with a free online password analyzer. Generate secure passwords privately in your browser.">
   <meta name="color-scheme" content="light dark">
+
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Password Security Analyzer">
+  <link rel="canonical" href="https://password-security-analyzer-kittu07.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Password Security Analyzer">
+  <meta property="og:title" content="Free Password Strength Checker &amp; Secure Generator">
+  <meta property="og:description" content="Analyze password strength, entropy and estimated crack time. Generate secure passwords privately in your browser.">
+  <meta property="og:url" content="https://password-security-analyzer-kittu07.vercel.app/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Free Password Strength Checker &amp; Secure Generator">
+  <meta name="twitter:description" content="Analyze password strength and generate secure passwords privately in your browser.">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Password Security Analyzer",
+    "url": "https://password-security-analyzer-kittu07.vercel.app/",
+    "description": "A free browser-based password strength checker, password entropy calculator, estimated password cracking time calculator, and secure password generator.",
+    "applicationCategory": "SecurityApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "A modern browser with JavaScript and Web Crypto API support.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Password strength analysis",
+      "Password entropy estimation",
+      "Theoretical password crack-time estimation",
+      "Cryptographically secure password generation",
+      "Local browser-only password analysis",
+      "PDF security report generation"
+    ]
+  }
+  </script>
   <meta name="google-site-verification" content="m8NL9wvVpZag4avcpTypbV5zmNT3r9YOxgs9nWuaRSk" />
   <script>
     /* Apply the saved theme before first paint to avoid a flash. */
@@ -49,8 +86,8 @@
     <!-- ============ HERO ============ -->
     <section class="hero">
       <p class="eyebrow eyebrow--hero">Personal Security Tool</p>
-      <h1>Password Security Analyzer</h1>
-      <p class="hero__sub">Analyze password strength, entropy, crack time, and get security recommendations.</p>
+      <h1>Free Password Strength Checker</h1>
+      <p class="hero__sub">Use this free online password analyzer to check password strength, estimate entropy and crack time, and generate secure passwords. Your password stays in your browser.</p>
     </section>
 
     <!-- ============ ANALYZER ============ -->
@@ -234,6 +271,50 @@
           <h3>6. Security Limitations</h3>
           <p>This tool does <strong>not</strong> check real data breaches or leaked-password databases, and its common-password list is small. A high score does not make a password safe if it was reused or leaked. Use a unique password for every account and enable multi-factor authentication.</p>
         </article>
+      </div>
+    </section>
+
+
+    <!-- ============ PASSWORD SECURITY GUIDE ============ -->
+    <section class="card card--about seo-guide" id="password-security-guide" aria-labelledby="guideTitle">
+      <p class="eyebrow">Password Security Guide</p>
+      <h2 class="h-lg" id="guideTitle">How to check password strength</h2>
+      <p>Enter a password in the analyzer to see its estimated strength score, character pool, entropy, and illustrative crack time. The checker also looks for common passwords, predictable sequences, repeated characters, year-like numbers, and simple word-plus-digit patterns.</p>
+
+      <h3 class="h-md">What makes a strong password?</h3>
+      <p>Use long, unique passwords or passphrases that are difficult to guess. Avoid reused passwords, common phrases, keyboard patterns, names, birthdays, and predictable substitutions. A password manager can help create and store a different password for every account. Enable multi-factor authentication wherever it is available.</p>
+
+      <h3 class="h-md">Password entropy calculator</h3>
+      <p>Password entropy is an estimate of unpredictability. This tool calculates a theoretical value using password length multiplied by the base-2 logarithm of the detected character pool size. The estimate assumes characters are selected uniformly at random. Human-created passwords often contain patterns, so their real-world predictability may be higher than this calculation suggests.</p>
+
+      <h3 class="h-md">Password cracking time calculator</h3>
+      <p>The displayed crack time is an illustrative average exhaustive-search estimate based on an assumed rate of 10 billion guesses per second. Actual attack time varies with password choice, password hashing method, hardware, and attack strategy. Treat the result as an educational estimate, not a security guarantee.</p>
+
+      <h3 class="h-md">Generate a secure password online</h3>
+      <p>Use the password generator to choose a length and character types. It uses the browser's Web Crypto API with rejection sampling and a secure shuffle. When the selected length allows, it includes at least one character from each selected category.</p>
+
+      <h3 class="h-md">Frequently asked questions</h3>
+      <div class="seo-faq">
+        <details>
+          <summary>Is my password sent to a server?</summary>
+          <p>No. Password analysis and generation run locally in your browser. This application has no backend or external password-checking API, and it does not transmit the password.</p>
+        </details>
+        <details>
+          <summary>Does this password checker detect leaked passwords?</summary>
+          <p>No. It checks a small built-in list of common passwords and predictable patterns. It does not query breached-password databases or confirm whether an account password has been exposed.</p>
+        </details>
+        <details>
+          <summary>How is password entropy estimated?</summary>
+          <p>The tool multiplies the password length by log base 2 of the detected character pool size. This is a theoretical estimate and assumes uniformly random character selection.</p>
+        </details>
+        <details>
+          <summary>Is the estimated password crack time guaranteed?</summary>
+          <p>No. It is an illustrative average brute-force estimate using an assumed 10 billion guesses per second. Real cracking speeds and attack methods vary significantly.</p>
+        </details>
+        <details>
+          <summary>Can I generate a secure password for free?</summary>
+          <p>Yes. Choose the desired length and character categories, then select Generate. The generator uses the browser's cryptographic random number generator.</p>
+        </details>
       </div>
     </section>
 

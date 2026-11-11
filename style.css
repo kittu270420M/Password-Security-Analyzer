@@ -467,3 +467,13 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
   html { scroll-behavior: auto; }
   * { transition: none !important; }
 }
+
+
+/* ---------- SEO guide content ---------- */
+.seo-guide { margin-top: 24px; }
+.seo-guide > p:not(.eyebrow) { margin-top: 12px; color: var(--text-2); }
+.seo-guide h3 { margin-top: 22px; margin-bottom: 7px; }
+.seo-faq { margin-top: 12px; display: grid; gap: 10px; }
+.seo-faq details { border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; background: var(--surface); }
+.seo-faq summary { cursor: pointer; font-weight: 600; }
+.seo-faq details p { margin-top: 10px; color: var(--text-2); }

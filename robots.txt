@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://password-security-analyzer-kittu07.vercel.app/sitemap.xml
